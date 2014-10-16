@@ -8,12 +8,12 @@ def getPageFavicon(url, iconUri=None):
     page = None
     if iconUri:
         try:
-            page = urlopen(iconUri)
+            page = urlopen(iconUri, timeout = 5)
         except:
             page = None
 
     if not page:
-        page = urlopen("http://getfavicon.appspot.com/%s" % url)
+        page = urlopen("http://getfavicon.appspot.com/%s" % url, timeout = 5)
 
     i = BytesIO(page.read())
 
