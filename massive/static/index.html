@@ -23,10 +23,10 @@
             </div>
         </nav>
 
-        <div>
+<!--         <div>
             <div ng-repeat="link in links | filter:search" class="linkBrick panel panel-default">
                 <div class="panel-heading linkBrick-header">
-                    <!-- <span class="glyphicon glyphicon-remove cross" ng-click="remove(link._id)"></span> -->
+                    <span class="glyphicon glyphicon-remove cross" ng-click="remove(link._id)"></span> 
                     <img ng-if="link.favicon" ng-src="/ico/{{link._id}}"></img>
                     <a href="{{link.url}}">
                         <h5>
@@ -38,21 +38,27 @@
                     <div ng-tag ng-model="link"></div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
-<!--         <table class="table table-condensed">
+       <table class="table table-condensed">
             <tbody>
                 <tr ng-repeat="link in links | filter:search">
                     <td>
                         <span class="glyphicon glyphicon-remove cross" ng-click="remove(link._id)"></span>
                     </td>
                     <td>
+                        <img ng-if="link.favicon" ng-src="/ico/{{link._id}}"></img>
+                    </td>
+                    <td>
                         <a href="{{link.url}}">{{link.title || link.url}}</a>
+                    </td>
+                    <td>
+                        <div ng-tag ng-model="link"></div>
                     </td>
                 </tr>
             </tbody>
 
-        </table> -->
+        </table>
     </body>
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/angular.js"></script>
