@@ -5,30 +5,59 @@
         <meta charset="utf-8">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/site.css">
+        <link rel="stylesheet" type="text/css" href="css/tags.css">
     </head>
 
     <body ng-controller="LinksListCtrl">
         <nav class="navbar navbar-default" role="navigation">
             <form class="navbar-form navbar-left" role="search">
-                <input type="text" class="form-control" placeholder="Search">
-                <button type="submit" class="btn btn-default "><span class="glyphicon glyphicon-refresh"></span></button>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" ng-model="search">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default "><span class="glyphicon glyphicon-refresh"></span></button>
+                    </span>
+                </div>
             </form>
             <div class="navbar-btn navbar-right">
                 <button class="btn btn-default" ng-click="open()">Add link</button>
             </div>
         </nav>
 
-        <div class="list-group">
-            <div ng-repeat="link in links" class="list-group-item">
-                <h4 class="list-group-item-heading"></h4>
-                <p class="list-group-item-text"></p>
+        <div>
+            <div ng-repeat="link in links | filter:search" class="linkBrick panel panel-default">
+                <div class="panel-heading linkBrick-header">
+                    <!-- <span class="glyphicon glyphicon-remove cross" ng-click="remove(link._id)"></span> -->
+                    <img ng-if="link.favicon" ng-src="/ico/{{link._id}}"></img>
+                    <a href="{{link.url}}">
+                        <h5>
+                            {{link.title || link.url}}
+                        </h5>
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <div ng-tag ng-model="link"></div>
+                </div>
             </div>
         </div>
-    </body>
 
-    <script src="js/angular.js"></script>
+<!--         <table class="table table-condensed">
+            <tbody>
+                <tr ng-repeat="link in links | filter:search">
+                    <td>
+                        <span class="glyphicon glyphicon-remove cross" ng-click="remove(link._id)"></span>
+                    </td>
+                    <td>
+                        <a href="{{link.url}}">{{link.title || link.url}}</a>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table> -->
+    </body>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/angular.js"></script>
     <!--<script src="js/angular-route.js"></script>-->
-    <script src="js/angular-resource.js"></script>
-    <script src="js/ui-bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/angular-resource.js"></script>
+    <script type="text/javascript" src="js/ui-bootstrap.min.js"></script>
     <script src="js/app.js"></script>
 </html>

@@ -1,0 +1,8 @@
+<ul class="tags">
+  <li><a href="#" class="tag" ng-repeat="tag in ngModel.tags">{{tag}}</a></li>
+  <span class="glyphicon glyphicon-plus pull-right" ng-click="toggleAddTags()"></span>
+</ul>
+<form class="form-inline" role="form" collapse="isCollapsed">
+    <input class="form-control input-sm " placeholder="Tags seperated by comas" ng-model="newTags">
+    <button class="btn btn-xs" ng-click="addTags(ngModel._id)">Add</button>
+</form>

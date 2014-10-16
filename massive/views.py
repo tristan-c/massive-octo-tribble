@@ -1,36 +1,69 @@
 from flask.ext.restful import Resource, reqparse
+from flask import redirect, send_file
 from massive import api, app
 from massive.models import *
-from bs4 import BeautifulSoup
+from massive.utils import *
+
+@app.route('/')
+def index():
+    return redirect("/index.html")
 
 parser = reqparse.RequestParser()
-parser.add_argument('title', type=str)
-parser.add_argument('str', type=list, default=[])
+parser.add_argument('url', type=str)
+parser.add_argument('tags', type=list, default=[])
 
-class getLinks(Resource):
+class links(Resource):
     def get(self):
         links = Links.objects()
         return [link.dump() for link in links]
 
-    def post(self):
+    def post(self,linkId):
         args = parser.parse_args()
 
+        if linkId:
+            link = Links.objects.get_or_404(id =linkId)
+            for tag in args['tags']:
+                if tag not in link.tags:
+                    link.tags.append(tag)
+            link.save()
+            return link.dump()
 
-api.add_resource(getLinks,'/links')#,'/trip/<string:ticketId>')
+        if not url:
+            return "an url must be sent",404
+
+        link = saveLink(
+            getPageTitle(args['url']),
+            args['url'],
+            args['tags'],
+            getPageFavicon(args['url'])
+        )
+        return link.dump()
 
 
-def handle(self, file):
-    file_path = args[0]
-    file = open(file_path, 'rb')
+api.add_resource(links,'/links','/links/<string:linkId>')
 
-    soup = BeautifulSoup(file.read())
-    user = User.objects.get(id=options['user_id'])
-    for td in soup.find_all('dt')[::-1]:
-        self.stdout.write(td.a.get('href'))
-        link = Link()
-        link.title = td.a.text
-        link.url = td.a.get('href')
-        link.added = datetime.datetime.fromtimestamp(int(td.a.get('add_date')))
-        link.tags = td.a.get('tags').replace(',', ' ')
-        link.user = user
-        link.save()
+@app.route('/ico/<icoId>')
+def getAvatar(icoId=None):
+    if not icoId:
+        return "not found",404
+
+    link = Links.objects.get(id=icoId)
+    if link.favicon:
+        image = link.favicon.image.get()
+        return send_file(image)
+    else:
+        return "no favicon",404
+
+
+def saveLink(title,url,tags=[],favicon=None):
+    link = Links(
+        title = title,
+        url = url,
+        tags = tags,
+    )
+    if favicon:
+        link.favicon = favicon
+
+    link.save()
+
+    return link

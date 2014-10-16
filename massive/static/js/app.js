@@ -18,37 +18,80 @@ massiveApp.controller('LinksListCtrl',['$scope','$modal','Links',
     function($scope,$modal,Links) {
         $scope.links = Links.query()
 
+        $scope.remove = function(_id){
+            console.log(_id)
+        }
+
         //---------------- modal -----------
         $scope.open = function () {
             var modalInstance = $modal.open({
                 templateUrl: 'partials/modal.html',
                 controller: ModalInstanceCtrl,
-                //size: size,
-                resolve: {
-                    items: function () {
-                        return $scope.items;
-                    }
-                }
             });
 
-            // modalInstance.result.then(function (selectedItem) {
-            //     $scope.selected = selectedItem;
-            // }, function () {
-            //     console.log('Modal dismissed at: ' + new Date());
-            // });
+            modalInstance.result.then(function (Links) {
+                $scope.links = Links.query()
+            })
         }
-
     }
 ]);
 
-var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
-    $scope.items = [];
+massiveApp.directive('ngTag', function() {
+    return {
+        restrict: 'A',
+        require: ['^ngModel'],
+        scope: {
+            ngModel: '='
+        },
+        controller: ['$scope', '$http', function($scope, $http) {
+            $scope.newTags = undefined;
+            $scope.isCollapsed = true;
+
+            $scope.toggleAddTags = function(){
+                if ($scope.isCollapsed == true)
+                    $scope.isCollapsed = false
+                else
+                    $scope.isCollapsed = true
+            }
+
+            $scope.addTags = function(_id){
+                if(_id != undefined){
+                    var data = {
+                        tags : $scope.newTags.split(",")
+                    }
+                    $http.post('/links/' + _id, data).success(function(r){
+                        $scope.ngModel.tags = r.tags
+                        $scope.toggleAddTags()
+                    })
+                }
+            }
+
+        }],
+
+        // link: function(scope, iElement, iAttrs, ctrl) {
+        //     //console.log(scope.ngModel)
+        //     return undefined
+        // },
+        templateUrl: 'template/ngtag.html'
+    }
+});
+
+var ModalInstanceCtrl = function ($scope, $modalInstance, $http) {
+    $scope.url = ""
+    $scope.tags = ""
 
     $scope.ok = function () {
-        $modalInstance.close($scope.selected.item);
+        var data = {
+            tags: $scope.tags.split(','),
+            url: $scope.url
+        }
+        $http.post('/links', data)//.success(function(){});
+        $modalInstance.dismiss('cancel');
     };
 
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
+
+
 };

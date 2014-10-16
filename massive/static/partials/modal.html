@@ -1,17 +1,12 @@
 <div class="modal-header">
-    <h3 class="modal-title">I'm a modal!</h3>
+    <button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span><span class="sr-only" ng-click="cancel()">Close</span></button>
+    <h3 class="modal-title">Add new link</h3>
 </div>
 <div class="modal-body">
-    <ul>
-        <li ng-repeat="item in items">
-            <a ng-click="selected.item = item">{{ item }}</a>
-        </li>
-    </ul>
-    Selected: <b>{{ selected.item }}</b>
+    <input ng-model="$parent.url" type="text" class="form-control" name="url" placeholder="Url">
+    <input ng-model="$parent.tags" type="text" class="form-control" name="url" placeholder="Tags separated with comas">
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="ok()">OK</button>
-    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
 </div>
-
-
