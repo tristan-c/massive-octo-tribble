@@ -19,12 +19,15 @@ def getPageFavicon(url, iconUri=None):
 
     if i:
         image = BytesIO()
-        Image.open(i).save(image, "PNG")
-        image.seek(0)
-        fav = Favicon()
-        fav.image.put(image)
-        fav.save()
-        return fav
+        try:
+            Image.open(i).save(image, "PNG")
+            image.seek(0)
+            fav = Favicon()
+            fav.image.put(image)
+            fav.save()
+            return fav
+        except Exception as e:
+            print("error with image")
     else:
         return None
 
