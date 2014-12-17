@@ -17,7 +17,7 @@ class links(Resource):
         links = Links.objects()
         return [link.dump() for link in links]
 
-    def post(self,linkId):
+    def post(self,linkId=None):
         args = parser.parse_args()
 
         if linkId:
@@ -28,8 +28,8 @@ class links(Resource):
             link.save()
             return link.dump()
 
-        if not url:
-            return "an url must be sent",404
+        if len(Links.objects(url=args['url'])) != 0:
+            return "already in db", 400
 
         link = saveLink(
             getPageTitle(args['url']),
@@ -41,6 +41,8 @@ class links(Resource):
 
 
 api.add_resource(links,'/links','/links/<string:linkId>')
+
+
 
 @app.route('/ico/<icoId>')
 def getAvatar(icoId=None):
