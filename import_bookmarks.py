@@ -49,6 +49,9 @@ if __name__ == '__main__':
     for td in soup.find_all('dt')[::-1]:
         url = td.a.get('href')
         if regex.match(url):
+            if len(Links.objects(url=url)) != 0:
+                print("%s : already in db" % url)
+                
             saveLink(
                 td.a.text,
                 url,

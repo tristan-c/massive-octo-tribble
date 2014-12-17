@@ -42,8 +42,6 @@ class links(Resource):
 
 api.add_resource(links,'/links','/links/<string:linkId>')
 
-
-
 @app.route('/ico/<icoId>')
 def getAvatar(icoId=None):
     if not icoId:
