@@ -39,6 +39,11 @@ class links(Resource):
         )
         return link.dump()
 
+    def delete(self,linkId=None):
+        link = Links.objects.get_or_404(id=linkId)
+        link.delete()
+        return ""
+
 
 api.add_resource(links,'/links','/links/<string:linkId>')
 

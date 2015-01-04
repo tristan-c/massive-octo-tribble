@@ -14,12 +14,15 @@ massiveApp.factory('Links', ['$resource',function ($resource) {
     return links
 }]);
 
-massiveApp.controller('LinksListCtrl',['$scope','$modal','Links',
-    function($scope,$modal,Links) {
+massiveApp.controller('LinksListCtrl',['$scope','$modal','$http','Links',
+    function($scope,$modal,$http,Links) {
         $scope.links = Links.query()
 
         $scope.remove = function(_id){
             console.log(_id)
+            $http.delete('/links/' + _id).success(function(r){
+                $scope.links = Links.query()
+            })
         }
 
         //---------------- modal -----------
