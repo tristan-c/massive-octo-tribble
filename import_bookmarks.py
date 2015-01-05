@@ -1,7 +1,7 @@
 """Import Bookmarks.
 
 Usage:
-    manage_bookmarks.py [-f FILE] [-p | --populate]
+    manage_bookmarks.py [-f FILE] [-p | --populate] (user)
     manage_bookmarks.py (-h | --help)
 
 
@@ -46,6 +46,12 @@ if __name__ == '__main__':
 
     soup = BeautifulSoup(file.read())
 
+    try:
+        user = Users.objects.get(login=arguments['login'])
+    except:
+        print("User not found")
+        return
+
     for td in soup.find_all('dt')[::-1]:
         url = td.a.get('href')
         if regex.match(url):
@@ -55,7 +61,8 @@ if __name__ == '__main__':
             saveLink(
                 td.a.text,
                 url,
-                favicon= getPageFavicon(url, iconUri=td.a.get('icon_uri'))
+                favicon= getPageFavicon(url, iconUri=td.a.get('icon_uri')),
+                user = user
             )
 
 

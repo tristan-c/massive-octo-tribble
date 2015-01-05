@@ -1,25 +1,39 @@
-from functools import wraps
-from flask import request, Response
+from flask import request, Response, render_template, g, redirect, url_for
+from flask.ext.login import LoginManager, logout_user, login_user
+from massive import login_manager, app, bcrypt
+from massive.forms import *
+from massive.models import Users
 
+@login_manager.user_loader
+def load_user(userid):
+    return Users.objects.get(id=userid)
 
-def check_auth(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
-    return username == 'admin' and password == 'secret'
+@login_manager.unauthorized_handler
+def unauthorized():
+    return "unauthorized",405
 
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response(
-    'Could not verify your access level for that URL.\n'
-    'You have to login with proper credentials', 401,
-    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if g.user is not None and g.user.is_authenticated():
+        return redirect(url_for('index'))
 
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
-        return f(*args, **kwargs)
-    return decorated
+    form = LoginForm()
+    error = None
+    if form.validate_on_submit():
+        try:
+            user = Users.objects.get(login=form.login.data)
+        except:
+            error = "Unkown user"
+            return render_template("login.html", form=form, error=error)
+        if not bcrypt.check_password_hash(user.password, form.password.data):
+            error = "bad password"
+        else:
+            login_user(user)
+            return redirect(request.args.get("next") or url_for("index"))
+
+    return render_template("login.html", form=form, error=error)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))

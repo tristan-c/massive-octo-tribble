@@ -1,20 +1,28 @@
 from flask.ext.restful import Resource, reqparse
-from flask import redirect, send_file
+from flask.ext.login import login_required
+from flask import redirect, send_file,g
 from massive import api, app
 from massive.models import *
 from massive.utils import *
 
+class Resource(Resource):
+    method_decorators = [login_required]
+
 @app.route('/')
 def index():
-    return redirect("/index.html")
+    if g.user is not None and g.user.is_authenticated():
+        return redirect("/index.html")
+    else:
+        return redirect("/login")
 
 parser = reqparse.RequestParser()
 parser.add_argument('url', type=str)
 parser.add_argument('tags', type=list, default=[])
 
+
 class links(Resource):
     def get(self):
-        links = Links.objects()
+        links = Links.objects(user = g.user.get_id())
         return [link.dump() for link in links]
 
     def post(self,linkId=None):
@@ -35,7 +43,8 @@ class links(Resource):
             getPageTitle(args['url']),
             args['url'],
             args['tags'],
-            getPageFavicon(args['url'])
+            getPageFavicon(args['url']),
+            g.user
         )
         return link.dump()
 
@@ -46,6 +55,7 @@ class links(Resource):
 
 
 api.add_resource(links,'/links','/links/<string:linkId>')
+
 
 @app.route('/ico/<icoId>')
 def getAvatar(icoId=None):
@@ -60,12 +70,14 @@ def getAvatar(icoId=None):
         return "no favicon",404
 
 
-def saveLink(title,url,tags=[],favicon=None):
+def saveLink(title,url,tags=[],favicon=None,user=None):
     link = Links(
         title = title,
         url = url,
         tags = tags,
+        user = user.get_id()
     )
+
     if favicon:
         link.favicon = favicon
 

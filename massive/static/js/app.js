@@ -71,10 +71,6 @@ massiveApp.directive('ngTag', function() {
 
         }],
 
-        // link: function(scope, iElement, iAttrs, ctrl) {
-        //     //console.log(scope.ngModel)
-        //     return undefined
-        // },
         templateUrl: 'template/ngtag.html'
     }
 });
