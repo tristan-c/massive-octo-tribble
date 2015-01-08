@@ -16,7 +16,7 @@ from massive.views import saveLink
 from massive.models import *
 from bs4 import BeautifulSoup
 from massive.utils import *
-import re
+import re,sys
 
 
 regex = re.compile('(?:http|ftp|https)://')
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         user = Users.objects.get(login=arguments['login'])
     except:
         print("User not found")
-        return
+        sys.exit()
 
     for td in soup.find_all('dt')[::-1]:
         url = td.a.get('href')
