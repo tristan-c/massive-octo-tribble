@@ -1,7 +1,7 @@
 """Import Bookmarks.
 
 Usage:
-    manage_bookmarks.py [-f FILE] [-p | --populate] (user)
+    manage_bookmarks.py [-f FILE] (user)
     manage_bookmarks.py (-h | --help)
 
 
