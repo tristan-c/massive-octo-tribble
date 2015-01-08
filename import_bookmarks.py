@@ -1,14 +1,13 @@
 """Import Bookmarks.
 
 Usage:
-    manage_bookmarks.py [-f FILE] (user)
+    manage_bookmarks.py [--file=<file>] <login>
     manage_bookmarks.py (-h | --help)
 
 
 Arguments:
-    -h --help       show this
-    -f --file       the bookmark file to import (html format)
-    -p --populate   fetch additionnal information (title, favicon)
+    -h, --help       show this
+    --file=<file>      the bookmark file to import (html format)
 """
 
 from docopt import docopt
@@ -42,12 +41,12 @@ def populateInformation():
 if __name__ == '__main__':
     arguments = docopt(__doc__)
 
-    file = open(arguments['FILE'], 'rb')
+    file = open(arguments.get('file'), 'rb')
 
     soup = BeautifulSoup(file.read())
 
     try:
-        user = Users.objects.get(login=arguments['login'])
+        user = Users.objects.get(login=arguments.get('login'))
     except:
         print("User not found")
         sys.exit()
