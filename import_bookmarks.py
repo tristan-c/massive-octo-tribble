@@ -1,13 +1,12 @@
 """Import Bookmarks.
 
 Usage:
-    manage_bookmarks.py [--file=<file>] <login>
-    manage_bookmarks.py (-h | --help)
+    manage_bookmarks.py FILE LOGIN
+    manage_bookmarks.py -h | --help
 
 
 Arguments:
-    -h, --help       show this
-    --file=<file>      the bookmark file to import (html format)
+    -h --help           Show help
 """
 
 from docopt import docopt
@@ -41,14 +40,14 @@ def populateInformation():
 if __name__ == '__main__':
     arguments = docopt(__doc__)
 
-    file = open(arguments.get('file'), 'rb')
+    file = open(arguments['FILE'], 'rb')
 
     soup = BeautifulSoup(file.read())
 
     try:
-        user = Users.objects.get(login=arguments.get('login'))
-    except:
-        print("User not found")
+        user = Users.objects.get(login=arguments['LOGIN'])
+    except Exception as e:
+        print(e)
         sys.exit()
 
     for td in soup.find_all('dt')[::-1]:
