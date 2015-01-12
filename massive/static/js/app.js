@@ -80,8 +80,14 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $http) {
     $scope.tags = ""
 
     $scope.ok = function () {
+        tags = $scope.tags.split(',')
+        tmp = []
+
+        for(i = 0; i < tags.length; i++)
+            tmp.push(tags[i].trim())
+
         var data = {
-            tags: $scope.tags.split(','),
+            tags: tmp,
             url: $scope.url
         }
         $http.post('/links', data)//.success(function(){});
