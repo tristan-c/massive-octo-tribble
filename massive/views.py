@@ -41,7 +41,7 @@ class links(Resource):
         if url.find("http://") == -1 and url.find("https://") == -1:
             url = "http://%s" % url
 
-        if len(Links.objects(url=url)) != 0:
+        if len(Links.objects(url=url,user = g.user.get_id())) != 0:
             return "already in db", 400
 
         link = saveLink(
