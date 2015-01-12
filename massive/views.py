@@ -36,12 +36,17 @@ class links(Resource):
             link.save()
             return link.dump()
 
-        if len(Links.objects(url=args['url'])) != 0:
+        url = args['url']
+
+        if url.find("http://") == -1 and url.find("https://") == -1:
+            url = "http://%s" % url
+
+        if len(Links.objects(url=url)) != 0:
             return "already in db", 400
 
         link = saveLink(
             getPageTitle(args['url']),
-            args['url'],
+            url,
             args['tags'],
             getPageFavicon(args['url']),
             g.user
