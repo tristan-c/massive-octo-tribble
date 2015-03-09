@@ -9,15 +9,18 @@ Arguments:
     -h --help           Show help
 """
 
-from docopt import docopt
-from massive.views import saveLink
-from massive.models import *
-from bs4 import BeautifulSoup
-from massive.utils import *
-import re,sys
+import re
+import sys
 
+from docopt import docopt
+from bs4 import BeautifulSoup
+
+from massive.views import save_link
+from massive.models import *
+from massive.utils import *
 
 regex = re.compile('(?:http|ftp|https)://')
+
 
 def populateInformation():
     for link in Links.objects():
@@ -55,13 +58,10 @@ if __name__ == '__main__':
         if regex.match(url):
             if len(Links.objects(url=url)) != 0:
                 print("%s : already in db" % url)
-                
-            saveLink(
+
+            save_link(
                 td.a.text,
                 url,
-                favicon= getPageFavicon(url, iconUri=td.a.get('icon_uri')),
-                user = user
+                favicon=getPageFavicon(url, iconUri=td.a.get('icon_uri')),
+                user=user
             )
-
-
-

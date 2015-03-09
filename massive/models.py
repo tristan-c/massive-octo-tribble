@@ -1,6 +1,7 @@
 from mongoengine import *
 from flask.ext.mongoengine import *
 
+
 class Users(Document):
     id = StringField()
     password = StringField()
@@ -18,11 +19,20 @@ class Users(Document):
     def is_authenticated(self):
         return True
 
+
 class Favicon(Document):
-    image = ImageField(size=(16, 16, True), thumbnail_size=None, collection_name='favicon',required=True)
+    image = ImageField(
+        size=(
+            16,
+            16,
+            True),
+        thumbnail_size=None,
+        collection_name='favicon',
+        required=True)
+
 
 class Links(Document):
-    tags = ListField(StringField()) 
+    tags = ListField(StringField())
     description = StringField()
     url = StringField()
     title = StringField()
@@ -41,4 +51,3 @@ class Links(Document):
         except:
             pass
         return output
-

@@ -1,16 +1,20 @@
 from flask import request, Response, render_template, g, redirect, url_for
 from flask.ext.login import LoginManager, logout_user, login_user
+
 from massive import login_manager, app, bcrypt
 from massive.forms import *
 from massive.models import Users
+
 
 @login_manager.user_loader
 def load_user(userid):
     return Users.objects.get(id=userid)
 
+
 @login_manager.unauthorized_handler
 def unauthorized():
-    return "unauthorized",405
+    return "unauthorized", 405
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -32,6 +36,7 @@ def login():
             return redirect(request.args.get("next") or url_for("index"))
 
     return render_template("login.html", form=form, error=error)
+
 
 @app.route('/logout')
 def logout():

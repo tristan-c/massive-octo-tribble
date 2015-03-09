@@ -1,12 +1,15 @@
 from flask.ext.restful import Resource, reqparse
 from flask.ext.login import login_required
-from flask import redirect, send_file,g
+from flask import redirect, send_file, g
+
 from massive import api, app
 from massive.models import *
 from massive.utils import *
 
+
 class Resource(Resource):
     method_decorators = [login_required]
+
 
 @app.route('/')
 def index():
@@ -21,15 +24,16 @@ parser.add_argument('tags', type=list, default=[])
 
 
 class links(Resource):
+
     def get(self):
-        links = Links.objects(user = g.user.get_id())
+        links = Links.objects(user=g.user.get_id())
         return [link.dump() for link in links]
 
-    def post(self,linkId=None):
+    def post(self, linkId=None):
         args = parser.parse_args()
 
         if linkId:
-            link = Links.objects.get_or_404(id =linkId)
+            link = Links.objects.get_or_404(id=linkId)
             for tag in args['tags']:
                 if tag not in link.tags:
                     link.tags.append(tag)
@@ -41,10 +45,10 @@ class links(Resource):
         if url.find("http://") == -1 and url.find("https://") == -1:
             url = "http://%s" % url
 
-        if len(Links.objects(url=url,user = g.user.get_id())) != 0:
+        if len(Links.objects(url=url, user=g.user.get_id())) != 0:
             return "already in db", 400
 
-        link = saveLink(
+        link = save_link(
             getPageTitle(url),
             url,
             args['tags'],
@@ -53,34 +57,34 @@ class links(Resource):
         )
         return link.dump()
 
-    def delete(self,linkId=None):
+    def delete(self, linkId=None):
         link = Links.objects.get_or_404(id=linkId)
         link.delete()
         return ""
 
 
-api.add_resource(links,'/links','/links/<string:linkId>')
+api.add_resource(links, '/links', '/links/<string:linkId>')
 
 
 @app.route('/ico/<icoId>')
-def getAvatar(icoId=None):
+def get_avatar(icoId=None):
     if not icoId:
-        return "not found",404
+        return "not found", 404
 
     link = Links.objects.get(id=icoId)
     if link.favicon:
         image = link.favicon.image.get()
         return send_file(image)
     else:
-        return "no favicon",404
+        return "no favicon", 404
 
 
-def saveLink(title,url,tags=[],favicon=None,user=None):
+def save_link(title, url, tags=[], favicon=None, user=None):
     link = Links(
-        title = title,
-        url = url,
-        tags = tags,
-        user = user.get_id()
+        title=title,
+        url=url,
+        tags=tags,
+        user=user.get_id()
     )
 
     if favicon:

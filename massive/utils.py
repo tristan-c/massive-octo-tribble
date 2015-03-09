@@ -4,17 +4,18 @@ from io import BytesIO
 from massive.models import *
 from bs4 import BeautifulSoup
 
+
 def getPageFavicon(url, iconUri=None):
     page = None
     if iconUri:
         try:
-            page = urlopen(iconUri, timeout = 5)
+            page = urlopen(iconUri, timeout=5)
         except:
             page = None
 
     if not page:
         try:
-            page = urlopen("http://getfavicon.appspot.com/%s" % url, timeout = 5)
+            page = urlopen("http://getfavicon.appspot.com/%s" % url, timeout=5)
         except:
             page = None
 
@@ -35,14 +36,15 @@ def getPageFavicon(url, iconUri=None):
         else:
             return None
 
+
 def getPageTitle(url):
-        page = urlopen(url)
-        text = page.read()
-        page.close()
-        soup = BeautifulSoup(text)
+    page = urlopen(url)
+    text = page.read()
+    page.close()
+    soup = BeautifulSoup(text)
 
-        for x in soup.findAll('title'):
-            if x.string:
-                return x.string
+    for x in soup.findAll('title'):
+        if x.string:
+            return x.string
 
-        return None
+    return None
