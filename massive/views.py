@@ -49,10 +49,10 @@ class links(Resource):
             return "already in db", 400
 
         link = save_link(
-            getPageTitle(url),
+            get_page_title(url),
             url,
             args['tags'],
-            getPageFavicon(url),
+            get_page_favicon(url),
             g.user
         )
         return link.dump()

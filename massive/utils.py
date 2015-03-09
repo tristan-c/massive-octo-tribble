@@ -5,7 +5,7 @@ from massive.models import *
 from bs4 import BeautifulSoup
 
 
-def getPageFavicon(url, iconUri=None):
+def get_page_favicon(url, iconUri=None):
     page = None
     if iconUri:
         try:
@@ -37,7 +37,7 @@ def getPageFavicon(url, iconUri=None):
             return None
 
 
-def getPageTitle(url):
+def get_page_title(url):
     page = urlopen(url)
     text = page.read()
     page.close()
