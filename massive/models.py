@@ -1,10 +1,10 @@
 from massive import db
+from pony.orm import *
 
-
-class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    password = db.Column(db.String(256), index=True, unique=True)
-    login = db.Column(db.String(64), index=True, unique=True)
+class Users(db.Entity):
+    password = Required(str)
+    login = Required(str,unique=True)
+    links = Set("Links", cascade_delete=True)
 
     def get_id(self):
         return str(self.id)
@@ -22,7 +22,7 @@ class Users(db.Model):
         return '<User %r>' % (self.login)
 
 
-# class Favicon(db.Model):
+# class Favicon(db.Entity):
 #     image = ImageField(
 #         size=(
 #             16,
@@ -32,29 +32,17 @@ class Users(db.Model):
 #         collection_name='favicon',
 #         required=True)
 
-class Tags(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True)
+class Tags(db.Entity):
+    name = Required(str)
+    links = Set("Links")
 
-tags_join = db.Table('tags_join',
-    db.Column('tag_id', db.Integer, db.ForeignKey('Tags.id')),
-    db.Column('link_id', db.Integer, db.ForeignKey('Links.id'))
-)
-
-class Links(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(456), index=True, unique=True)
-    url = db.Column(db.String(256), index=True, unique=True)
-    title = db.Column(db.String(256), index=True, unique=True)
+class Links(db.Entity):
+    description = Optional(str)
+    url = Optional(str)
+    title = Optional(str)
     #favicon = ReferenceField(Favicon)
-    user = db.relationship('Users',
-        backref=db.backref('links', lazy='dynamic'))
-
-    tags = db.relationship('Links', 
-                            primaryjoin=(tags_join.c.tag_id == id), 
-                            secondaryjoin=(tags_join.c.link_id == id),
-                            backref=db.backref('link', lazy='dynamic'), 
-                            lazy='dynamic')
+    user = Required(Users)
+    tags = Set(Tags)
 
     def dump(self):
         output = self.__dict__["_data"]
@@ -72,7 +60,7 @@ class Links(db.Model):
     def __repr__(self):
         return '<Link %r>' % (self.url)
 
-class Favicon(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    link = db.relationship('Links',
-        backref=db.backref('favicons', lazy='dynamic'))
+# class Favicon(db.Entity):
+#     link = 
+
+db.generate_mapping(create_tables=True)

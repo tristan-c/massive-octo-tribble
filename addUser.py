@@ -5,16 +5,16 @@ Usage:
 """
 
 from docopt import docopt
-from massive.models import Users
-from massive import bcrypt,db
+from massive import bcrypt,db, models
+from pony.orm import db_session
 
 if __name__ == '__main__':
     arguments = docopt(__doc__)
 
     passwd = input("Enter password: ")
-    user = Users(
-        login=arguments['USERNAME'],
-        password=bcrypt.generate_password_hash(passwd))
-    db.session.add(user)
-    db.session.commit()
-    print("user %s saved" % user.login)
+
+    with db_session:
+        user = models.Users(
+            login=arguments['USERNAME'],
+            password=bcrypt.generate_password_hash(passwd))
+        print("user %s saved" % user.login)
