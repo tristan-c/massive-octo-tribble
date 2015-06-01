@@ -6,7 +6,7 @@ Usage:
 
 from docopt import docopt
 from massive.models import Users
-from massive import bcrypt
+from massive import bcrypt,db
 
 if __name__ == '__main__':
     arguments = docopt(__doc__)
@@ -15,5 +15,6 @@ if __name__ == '__main__':
     user = Users(
         login=arguments['USERNAME'],
         password=bcrypt.generate_password_hash(passwd))
-    user.save()
+    db.session.add(user)
+    db.session.commit()
     print("user %s saved" % user.login)

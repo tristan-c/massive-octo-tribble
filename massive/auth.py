@@ -8,13 +8,12 @@ from massive.models import Users
 
 @login_manager.user_loader
 def load_user(userid):
-    return Users.objects.get(id=userid)
+    return User.query.get(int(userid))
 
 
 @login_manager.unauthorized_handler
 def unauthorized():
     return "unauthorized", 405
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -25,10 +24,12 @@ def login():
     error = None
     if form.validate_on_submit():
         try:
-            user = Users.objects.get(login=form.login.data)
-        except:
-            error = "Unkown user"
+            user = Users.query.filter_by(login=form.login.data).first()
+            if not user:
+                raise ValueError("Unkown user")
+        except Exception as error:
             return render_template("login.html", form=form, error=error)
+
         if not bcrypt.check_password_hash(user.password, form.password.data):
             error = "bad password"
         else:

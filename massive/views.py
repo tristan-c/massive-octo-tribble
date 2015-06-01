@@ -27,6 +27,7 @@ class links(Resource):
 
     def get(self):
         links = Links.objects(user=g.user.get_id())
+
         return [link.dump() for link in links]
 
     def post(self, linkId=None):
