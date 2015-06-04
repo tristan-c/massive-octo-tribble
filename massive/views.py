@@ -37,18 +37,18 @@ class links(Resource):
         if linkId:
             with db_session:
                 link = Links.get(id=linkId)
-            if not link:
-                return 404
+                if not link:
+                    return 404
 
-            taglist = [t.name for t in links.tags]
-            for tag in args['tags']:
-                if tag not in taglist:
-                    db_tag = Tags.get(name=tag)
-                    if not db_tag:
-                        db_tag = Tags(name=tag)
-                    link.tags.append(db_tag)
+                taglist = [t.name for t in links.tags]
+                for tag in args['tags']:
+                    if tag not in taglist:
+                        db_tag = Tags.get(name=tag)
+                        if not db_tag:
+                            db_tag = Tags(name=tag)
+                        link.tags.append(db_tag)
 
-            commit()
+                commit()
 
             return link.dump()
 
@@ -72,8 +72,13 @@ class links(Resource):
         return link.dump()
 
     def delete(self, linkId=None):
-        link = Links.objects.get_or_404(id=linkId)
-        link.delete()
+        with db_session:
+            link = Links.get(id=linkId)
+            if not link:
+                return 404
+
+            link.delete()
+            commit()
         return ""
 
 
