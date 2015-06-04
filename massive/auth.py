@@ -5,10 +5,13 @@ from massive import login_manager, app, bcrypt
 from massive.forms import *
 from massive.models import Users
 
+from pony.orm import get, db_session
+
 
 @login_manager.user_loader
 def load_user(userid):
-    return User.query.get(int(userid))
+    with db_session:
+        return Users.get(id=userid)
 
 
 @login_manager.unauthorized_handler
@@ -24,7 +27,8 @@ def login():
     error = None
     if form.validate_on_submit():
         try:
-            user = Users.query.filter_by(login=form.login.data).first()
+            with db_session:
+                user = Users.get(login=form.login.data)
             if not user:
                 raise ValueError("Unkown user")
         except Exception as error:

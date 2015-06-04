@@ -45,17 +45,14 @@ class Links(db.Entity):
     tags = Set(Tags)
 
     def dump(self):
-        output = self.__dict__["_data"]
-        if "id" in output:
-            output['_id'] = str(output['id'])
-            del output['id']
-        if output['favicon']:
-            output['favicon'] = True
-        try:
-            del output['user']
-        except:
-            pass
-        return output
+        tags = [t.name for t in self.tags]
+
+        return {
+            "url": self.url,
+            "title": self.title,
+            "description": self.description,
+            "tags": tags
+        }
 
     def __repr__(self):
         return '<Link %r>' % (self.url)

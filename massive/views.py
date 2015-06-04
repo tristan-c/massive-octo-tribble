@@ -6,6 +6,7 @@ from massive import api, app
 from massive.models import *
 from massive.utils import *
 
+from pony.orm import *
 
 class Resource(Resource):
     method_decorators = [login_required]
@@ -26,19 +27,29 @@ parser.add_argument('tags', type=list, default=[])
 class links(Resource):
 
     def get(self):
-        links = Links.objects(user=g.user.get_id())
-
-        return [link.dump() for link in links]
+        with db_session:
+            links = select(l for l in Links if l.user.id == g.user.id)
+            return [link.dump() for link in links]
 
     def post(self, linkId=None):
         args = parser.parse_args()
 
         if linkId:
-            link = Links.objects.get_or_404(id=linkId)
+            with db_session:
+                link = Links.get(id=linkId)
+            if not link:
+                return 404
+
+            taglist = [t.name for t in links.tags]
             for tag in args['tags']:
-                if tag not in link.tags:
-                    link.tags.append(tag)
-            link.save()
+                if tag not in taglist:
+                    db_tag = Tags.get(name=tag)
+                    if not db_tag:
+                        db_tag = Tags(name=tag)
+                    link.tags.append(db_tag)
+
+            commit()
+
             return link.dump()
 
         url = args['url']
@@ -46,8 +57,9 @@ class links(Resource):
         if url.find("http://") == -1 and url.find("https://") == -1:
             url = "http://%s" % url
 
-        if len(Links.objects(url=url, user=g.user.get_id())) != 0:
-            return "already in db", 400
+        with db_session:
+            if Links.get(url=url, user=g.user.get_id()):
+                return "already in db", 400
 
         link = save_link(
             get_page_title(url),
@@ -56,6 +68,7 @@ class links(Resource):
             get_page_favicon(url),
             g.user
         )
+
         return link.dump()
 
     def delete(self, linkId=None):
@@ -79,18 +92,27 @@ def get_avatar(icoId=None):
     else:
         return "no favicon", 404
 
-
+@db_session
 def save_link(title, url, tags=[], favicon=None, user=None):
+    
+    db_tags = []
+    for tag in tags:
+        db_tag = Tags.get(name=tag)
+        if not db_tag:
+            db_tag = Tags(name=tag)
+        db_tags.append(db_tag)
+
+
     link = Links(
         title=title,
         url=url,
-        tags=tags,
+        tags=db_tags,
         user=user.get_id()
     )
 
-    if favicon:
-        link.favicon = favicon
+    # if favicon:
+    #     link.favicon = favicon
 
-    link.save()
+    commit()
 
     return link
