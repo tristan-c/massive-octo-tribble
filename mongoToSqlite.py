@@ -38,7 +38,7 @@ if __name__ == '__main__':
             line = json.loads(file_line)
 
             with db_session:
-                link = models.Users.get(url=line["url"])
+                link = models.Links.get(url=line["url"])
 
                 if not link:
                     save_link(
