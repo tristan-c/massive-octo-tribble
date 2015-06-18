@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
                 if not link:
                     save_link(
-                            line.get("title"," "),
+                            line.get("title",None),
                             line.get("url",None),
                             line.get("tags",None),
                             None,
