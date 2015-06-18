@@ -38,12 +38,15 @@ if __name__ == '__main__':
             line = json.loads(file_line)
 
             with db_session:
-                save_link(
-                        line["title"],
-                        line["url"],
-                        line["tags"],
-                        None,
-                        list_users[line["user"]["$oid"]]
-                        )
+                link = models.Users.get(url=line["url"])
+
+                if not link:
+                    save_link(
+                            line.get("title",None),
+                            line.get("url",None),
+                            line.get("tags",None),
+                            None,
+                            list_users[line["user"]["$oid"]]
+                            )
 
 
