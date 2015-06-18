@@ -32,7 +32,7 @@ def login():
             if not user:
                 raise ValueError("Unkown user")
         except Exception as e:
-            return render_template("login.html", login_user_form=form, error=[e])
+            return render_template("security/login_user.html", login_user_form=form, error=[e])
 
         if not bcrypt.check_password_hash(user.password, form.password.data):
             error.append("bad password")
