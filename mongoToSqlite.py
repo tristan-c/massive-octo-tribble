@@ -40,9 +40,13 @@ if __name__ == '__main__':
             with db_session:
                 link = models.Links.select(lambda l: l.url == line["url"])
 
+                title = line.get("url",None)
+                if not title:
+                    title = " "
+
                 if not link:
                     save_link(
-                            line.get("title",None),
+                            title,
                             line.get("url",None),
                             line.get("tags",None),
                             None,
