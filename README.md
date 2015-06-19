@@ -3,6 +3,10 @@ massive-octo-tribble
 
 import,store et search bookmarks
 
+* Default to SQLite through PonyOrm
+* Flask
+* bcrypt for passwords encryption
+
 Installation
 ------------
 
