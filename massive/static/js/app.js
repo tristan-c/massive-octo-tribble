@@ -20,9 +20,11 @@ massiveApp.controller('LinksListCtrl',['$scope','$modal','$http','Links',
 
         $scope.remove = function(_id){
             console.log(_id)
-            $http.delete('/links/' + _id).success(function(r){
-                $scope.links = Links.query()
-            })
+            if(_id != undefined){
+                $http.delete('/links/' + _id).success(function(r){
+                    $scope.links = Links.query()
+                })
+            }
         }
 
         //---------------- modal -----------

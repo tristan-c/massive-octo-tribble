@@ -48,6 +48,7 @@ class Links(db.Entity):
         tags = [t.name for t in self.tags]
 
         return {
+            "_id": self.id,
             "url": self.url,
             "title": self.title,
             "description": self.description,
