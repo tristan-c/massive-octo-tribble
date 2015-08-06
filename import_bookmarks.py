@@ -19,11 +19,13 @@ from massive.views import save_link
 from massive.models import *
 from massive.utils import *
 
+from pony.orm import db_session
+
 regex = re.compile('(?:http|ftp|https)://')
 
-
+@db_session
 def populateInformation():
-    for link in Links.objects():
+    for link in Links.select():
         try:
             if not link.title:
                 page = urlopen(link.url)
@@ -35,7 +37,7 @@ def populateInformation():
                     if x.string:
                         link.title = x.string
                         print(link.title)
-                        link.save()
+                commit()
         except Exception as e:
             print(e)
             pass
