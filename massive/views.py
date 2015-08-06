@@ -107,6 +107,8 @@ def save_link(title, url, tags=[], favicon=None, user=None):
             db_tag = Tags(name=tag)
         db_tags.append(db_tag)
 
+    if not title:
+        title = url.split('/')[-1]
 
     link = Links(
         title=title,
