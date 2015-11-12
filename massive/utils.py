@@ -1,4 +1,6 @@
-from urllib.request import urlopen
+
+import urllib
+
 from PIL import Image
 from io import BytesIO
 from massive.models import *
@@ -9,7 +11,7 @@ def get_page_favicon(url, iconUri=None):
     page = None
     if iconUri:
         try:
-            page = urlopen(iconUri, timeout=5)
+            page = urllib.request.urlopen(iconUri, timeout=5)
         except:
             page = None
 
@@ -39,9 +41,14 @@ def get_page_favicon(url, iconUri=None):
 
 def get_page_title(url):
     try:
-        page = urlopen(url)
-        text = page.read()
-        page.close()
+        req = urllib.request.Request(
+            url, 
+            data=None, 
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+            }
+        )
+        text = urllib.request.urlopen(req).read()
     except:
         return None
         
