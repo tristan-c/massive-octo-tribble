@@ -14,7 +14,7 @@ Installation
 git clone https://github.com/tristan-c/massive-octo-tribble && cd massive-octo-tribble
 pyvenv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirement.txt
 python run.py
 ```
 
