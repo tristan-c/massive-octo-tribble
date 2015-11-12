@@ -54,6 +54,7 @@ class links(Resource):
 
         url = args['url']
 
+        #prepend if no protocole specified
         if url.find("http://") == -1 and url.find("https://") == -1:
             url = "http://%s" % url
 

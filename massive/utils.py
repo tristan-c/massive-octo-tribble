@@ -38,9 +38,13 @@ def get_page_favicon(url, iconUri=None):
 
 
 def get_page_title(url):
-    page = urlopen(url)
-    text = page.read()
-    page.close()
+    try:
+        page = urlopen(url)
+        text = page.read()
+        page.close()
+    except:
+        return None
+        
     soup = BeautifulSoup(text)
 
     for x in soup.findAll('title'):
