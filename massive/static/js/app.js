@@ -11,31 +11,31 @@ massiveApp.factory('Links', ['$resource',function ($resource) {
                         'query':{cache:false,isArray:true}
                     }
     );
-    return links
+    return links;
 }]);
 
 massiveApp.controller('LinksListCtrl',['$scope','$modal','$http','Links',
     function($scope,$modal,$http,Links) {
-        $scope.links = Links.query()
+        $scope.links = Links.query();
 
         $scope.remove = function(_id){
             console.log(_id)
             if(_id != undefined){
                 $http.delete('/links/' + _id).success(function(r){
-                    $scope.links = Links.query()
+                    $scope.links = Links.query();
                 })
             }
-        }
+        };
 
         //---------------- modal -----------
         $scope.open = function () {
             var modalInstance = $modal.open({
                 templateUrl: 'partials/modal.html',
-                controller: ModalInstanceCtrl,
+                controller: 'ModalInstanceCtrl'
             });
 
-            modalInstance.result.then(function (Links) {
-                $scope.links = Links.query()
+            modalInstance.result.then(function () {
+                $scope.links = Links.query();
             })
         }
     }
@@ -63,37 +63,35 @@ massiveApp.directive('ngTag', function() {
                 if(_id != undefined){
                     var data = {
                         tags : $scope.newTags.split(",")
-                    }
+                    };
                     $http.post('/links/' + _id, data).success(function(r){
                         $scope.ngModel.tags = r.tags
                         $scope.toggleAddTags()
-                    })
+                    });
                 }
             }
-
         }],
-
         templateUrl: 'template/ngtag.html'
-    }
+    };
 });
 
 var ModalInstanceCtrl = function ($scope, $modalInstance, $http) {
-    $scope.url = ""
-    $scope.tags = ""
+    $scope.url = "";
+    $scope.tags = "";
 
     $scope.ok = function () {
-        tags = $scope.tags.split(',')
-        tmp = []
+        tags = $scope.tags.split(',');
+        tmp = [];
 
         for(i = 0; i < tags.length; i++)
-            tmp.push(tags[i].trim())
+            tmp.push(tags[i].trim());
 
         var data = {
             tags: tmp,
             url: $scope.url
-        }
-        $http.post('/links', data)//.success(function(){});
-        $modalInstance.dismiss('cancel');
+        };
+        $http.post('/links', data);//.success(function(){});
+        $modalInstance.close();
     };
 
     $scope.cancel = function () {
