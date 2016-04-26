@@ -66,6 +66,7 @@ massiveApp.directive('ngTag', function() {
                     };
                     $http.post('/links/' + _id, data).success(function(r){
                         $scope.ngModel.tags = r.tags
+                        $scope.newTags = undefined;
                         $scope.toggleAddTags()
                     });
                 }

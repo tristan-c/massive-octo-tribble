@@ -40,13 +40,13 @@ class links(Resource):
                 if not link:
                     return 404
 
-                taglist = [t.name for t in links.tags]
+                taglist = [t.name for t in link.tags]
                 for tag in args['tags']:
                     if tag not in taglist:
                         db_tag = Tags.get(name=tag)
                         if not db_tag:
                             db_tag = Tags(name=tag)
-                        link.tags.append(db_tag)
+                        link.tags.add(db_tag)
 
                 commit()
 
