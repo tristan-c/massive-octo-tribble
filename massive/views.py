@@ -1,6 +1,6 @@
 from flask.ext.restful import Resource, reqparse
 from flask.ext.login import login_required
-from flask import redirect, send_file, g
+from flask import redirect, send_file, g, url_for
 
 from massive import api, app
 from massive.models import *
@@ -11,11 +11,10 @@ from pony.orm import *
 class Resource(Resource):
     method_decorators = [login_required]
 
-
 @app.route('/')
 def index():
     if g.user is not None and g.user.is_authenticated():
-        return redirect("/index.html")
+        return redirect('/index.html')
     else:
         return redirect("/login")
 
@@ -38,7 +37,7 @@ class links(Resource):
             with db_session:
                 link = Links.get(id=linkId)
                 if not link:
-                    return 404
+                    return "no link found", 404
 
                 taglist = [t.name for t in link.tags]
                 for tag in args['tags']:
@@ -76,7 +75,7 @@ class links(Resource):
         with db_session:
             link = Links.get(id=linkId)
             if not link:
-                return 404
+                return "no link found", 404
 
             link.delete()
             commit()
@@ -97,6 +96,7 @@ def get_avatar(icoId=None):
         return send_file(image)
     else:
         return "no favicon", 404
+
 
 @db_session
 def save_link(title, url, tags=[], favicon=None, user=None):

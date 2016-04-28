@@ -4,11 +4,22 @@ var massiveApp = angular.module('massiveApp', [
     //'ngRoute'
 ]);
 
-massiveApp.factory('Links', ['$resource',function ($resource) {
+massiveApp.factory('NotLogged', ['$window', function($window) {
+    return {
+        'responseError': function(error) {
+            if(error.status == 405) {
+                $window.location.href = '/login';
+            }
+        }
+    }
+}]);
+
+massiveApp.factory('Links', ['$resource','NotLogged',
+    function ($resource, NotLogged) {
     var links = $resource(
         '/links', {}, {
                         'save':{method:'POST'},
-                        'query':{cache:false,isArray:true}
+                        'query':{cache:false,isArray:true,interceptor:NotLogged}
                     }
     );
     return links;
