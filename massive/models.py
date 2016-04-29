@@ -22,15 +22,17 @@ class Users(db.Entity):
         return '<User %r>' % (self.login)
 
 
-# class Favicon(db.Entity):
-#     image = ImageField(
-#         size=(
-#             16,
-#             16,
-#             True),
-#         thumbnail_size=None,
-#         collection_name='favicon',
-#         required=True)
+class Favicon(db.Entity):
+    image = Optional(bytes)
+    links = Set("Links")
+    # image = ImageField(
+    #     size=(
+    #         16,
+    #         16,
+    #         True),
+    #     thumbnail_size=None,
+    #     collection_name='favicon',
+    #     required=True)
 
 class Tags(db.Entity):
     name = Optional(str)
@@ -40,7 +42,7 @@ class Links(db.Entity):
     description = Optional(str)
     url = Optional(str)
     title = Optional(str)
-    #favicon = ReferenceField(Favicon)
+    favicon = Set(Favicon)
     user = Required(Users)
     tags = Set(Tags)
 

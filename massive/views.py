@@ -61,11 +61,14 @@ class links(Resource):
             if Links.get(url=url, user=g.user.get_id()):
                 return "already in db", 400
 
+            fav = get_page_favicon(url)
+
+
         link = save_link(
             get_page_title(url),
             url,
             args['tags'],
-            get_page_favicon(url),
+            fav,
             g.user
         )
 
@@ -118,8 +121,8 @@ def save_link(title, url, tags=[], favicon=None, user=None):
         user=user.get_id()
     )
 
-    # if favicon:
-    #     link.favicon = favicon
+    if favicon:
+        link.favicon = favicon
 
     commit()
 
