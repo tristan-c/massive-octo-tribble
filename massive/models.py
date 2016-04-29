@@ -33,7 +33,7 @@ class Users(db.Entity):
 #         required=True)
 
 class Tags(db.Entity):
-    name = Required(str)
+    name = Optional(str)
     links = Set("Links")
 
 class Links(db.Entity):

@@ -88,20 +88,27 @@ massiveApp.directive('ngTag', function() {
 });
 
 var ModalInstanceCtrl = function ($scope, $modalInstance, $http) {
-    $scope.url = "";
-    $scope.tags = "";
+    $scope.url = undefined;
+    $scope.tags = undefined;
 
     $scope.ok = function () {
-        tags = $scope.tags.split(',');
-        tmp = [];
 
-        for(i = 0; i < tags.length; i++)
-            tmp.push(tags[i].trim());
+        if (!angular.isUndefined($scope.url)){
+                tmp = [];
 
-        var data = {
-            tags: tmp,
-            url: $scope.url
-        };
+            if(!angular.isUndefined($scope.tags)){
+                tags = $scope.tags.split(',');
+
+                for(i = 0; i < tags.length; i++)
+                    tmp.push(tags[i].trim());
+            }
+
+            var data = {
+                tags: tmp,
+                url: $scope.url
+            };
+        }
+
         $http.post('/links', data);//.success(function(){});
         $modalInstance.close();
     };

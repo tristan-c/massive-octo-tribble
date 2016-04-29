@@ -2,11 +2,13 @@
     <button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span><span class="sr-only" ng-click="cancel()">Close</span></button>
     <h3 class="modal-title">Add new link</h3>
 </div>
-<div class="modal-body">
-    <input ng-model="$parent.url" type="text" class="form-control" name="url" placeholder="Url">
-    <input ng-model="$parent.tags" type="text" class="form-control" name="url" placeholder="Tags separated with comas">
-</div>
-<div class="modal-footer">
-    <button class="btn btn-primary" ng-click="ok()">OK</button>
-    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
-</div>
+<form ng-app="" name="addLink">
+	<div class="modal-body">
+	    <input ng-model="$parent.url" type="text" class="form-control" name="url" placeholder="Url" required>
+	    <input ng-model="$parent.tags" type="text" class="form-control" name="url" placeholder="Tags separated with comas">
+	</div>
+	<div class="modal-footer">
+	    <button class="btn btn-primary" ng-click="ok()" ng-disabled="addLink.$invalid">OK</button>
+	    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+	</div>
+</form>

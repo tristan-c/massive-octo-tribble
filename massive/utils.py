@@ -54,8 +54,8 @@ def get_page_title(url):
         
     soup = BeautifulSoup(text)
 
-    for x in soup.findAll('title'):
-        if x.string:
-            return x.string
+    title = soup.findAll('title')
+    if title:
+        return title[0]
 
     return None
