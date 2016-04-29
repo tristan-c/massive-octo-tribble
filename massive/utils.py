@@ -56,6 +56,6 @@ def get_page_title(url):
 
     title = soup.findAll('title')
     if title:
-        return title[0]
+        return title[0].string
 
     return None
