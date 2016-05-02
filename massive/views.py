@@ -59,16 +59,12 @@ class links(Resource):
 
         with db_session:
             if Links.get(url=url, user=g.user.get_id()):
-                return "already in db", 400
-
-            fav = get_page_favicon(url)
-
+                return "already in db", 400 
 
         link = save_link(
             get_page_title(url),
             url,
             args['tags'],
-            fav,
             g.user
         )
 
@@ -93,16 +89,18 @@ def get_avatar(icoId=None):
     if not icoId:
         return "not found", 404
 
-    link = Links.objects.get(id=icoId)
-    if link.favicon:
-        image = link.favicon.image.get()
-        return send_file(image)
-    else:
-        return "no favicon", 404
+    with db_session:
+        link = Links.get(id=icoId)
+        if link.favicon:
+            image = link.favicon.image
+            import pdb; pdb.set_trace()  # breakpoint 6a98782b //
+            return send_file(image)
+        else:
+            return "no favicon", 404
 
 
 @db_session
-def save_link(title, url, tags=[], favicon=None, user=None):
+def save_link(title, url, tags=[], user=None):
     
     db_tags = []
     for tag in tags:
@@ -114,15 +112,19 @@ def save_link(title, url, tags=[], favicon=None, user=None):
     if not title:
         title = url.split('/')[-1]
 
+    favicon = get_page_favicon(url)
+
     link = Links(
         title=title,
         url=url,
         tags=db_tags,
-        user=user.get_id()
+        user=user.get_id(),
+        favicon=favicon 
     )
 
-    if favicon:
-        link.favicon = favicon
+    
+    # if favicon:
+    #     link.favicon = favicon
 
     commit()
 

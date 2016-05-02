@@ -32,8 +32,8 @@ def get_page_favicon(url, iconUri=None):
                 # sudo apt-get install libjpeg-dev zlib1g-dev
                 Image.open(i).save(image, "PNG")
                 image.seek(0)
-                fav = Favicon()
-                fav.image = image.read()
+                fav = Favicon(image=image.read())
+                # fav.image = image.read()
                 # fav.save()
                 return fav
             except Exception as e:
