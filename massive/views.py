@@ -97,7 +97,6 @@ def get_avatar(icoId=None):
         if link.favicon:
             bImage = next(iter(link.favicon.image))
             image = Image.open(BytesIO(bImage))
-            import pdb; pdb.set_trace()  # breakpoint e94c798b //
             return send_file(image)
         else:
             return "no favicon", 404
