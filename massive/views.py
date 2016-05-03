@@ -8,6 +8,9 @@ from massive.utils import *
 
 from pony.orm import *
 
+from PIL import Image
+from io import BytesIO
+
 class Resource(Resource):
     method_decorators = [login_required]
 
@@ -92,8 +95,9 @@ def get_avatar(icoId=None):
     with db_session:
         link = Links.get(id=icoId)
         if link.favicon:
-            image = link.favicon.image
-            import pdb; pdb.set_trace()  # breakpoint 6a98782b //
+            bImage = next(iter(link.favicon.image))
+            image = Image.open(BytesIO(bImage))
+            import pdb; pdb.set_trace()  # breakpoint e94c798b //
             return send_file(image)
         else:
             return "no favicon", 404
