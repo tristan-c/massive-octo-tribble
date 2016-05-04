@@ -8,17 +8,8 @@ from bs4 import BeautifulSoup
 
 
 def get_page_favicon(url, iconUri=None):
-    # page = None
-    # if iconUri:
-    #     try:
-    #         page = urllib.request.urlopen(iconUri, timeout=5)
-    #     except:
-    #         page = None
-
-    # if not page:
     try:
         page = urllib.request.urlopen("http://www.google.com/s2/favicons?domain=%s" % url, timeout=5)
-        # page = urllib.request.urlopen("http://getfavicon.appspot.com/%s" % url, timeout=5)
         # page = urllib.request.urlopen("%s/favicon.ico" % url, timeout=5)
     except:
         page = None
@@ -29,12 +20,9 @@ def get_page_favicon(url, iconUri=None):
         if i:
             image = BytesIO()
             try:
-                # sudo apt-get install libjpeg-dev zlib1g-dev
                 Image.open(i).save(image, "PNG")
                 image.seek(0)
                 fav = Favicon(image=image.read())
-                # fav.image = image.read()
-                # fav.save()
                 return fav
             except Exception as e:
                 print("error with image")

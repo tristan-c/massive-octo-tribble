@@ -8,7 +8,6 @@ from massive.utils import *
 
 from pony.orm import *
 
-from PIL import Image
 from io import BytesIO
 
 class Resource(Resource):
@@ -96,8 +95,8 @@ def get_avatar(icoId=None):
         link = Links.get(id=icoId)
         if link.favicon:
             bImage = next(iter(link.favicon.image))
-            image = Image.open(BytesIO(bImage))
-            return send_file(image)
+            image = BytesIO(bImage)
+            return send_file(image, as_attachment=True, attachment_filename='myfile.png')
         else:
             return "no favicon", 404
 
@@ -121,13 +120,12 @@ def save_link(title, url, tags=[], user=None):
         title=title,
         url=url,
         tags=db_tags,
-        user=user.get_id(),
-        favicon=favicon 
+        user=user.get_id()
     )
 
     
-    # if favicon:
-    #     link.favicon = favicon
+    if favicon:
+        link.favicon = favicon
 
     commit()
 
