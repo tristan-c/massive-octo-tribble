@@ -1,11 +1,20 @@
 massive-octo-tribble
 ====================
 
-import,store et search bookmarks
+import,store and search bookmarks
 
 * Default to SQLite through PonyOrm
 * Flask
 * bcrypt for passwords encryption
+
+Dependencies
+------------
+
+Ubuntu:
+
+```bash
+sudo apt-get install python-dev build-essential libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev libffi-dev python3-dev
+```
 
 Installation
 ------------
@@ -25,8 +34,9 @@ python addUser.py
 
 Everything is setup, You can open your browser at http://localhost:7777/.
 
-importing bookmarks from firefox/chrome
+Importing bookmarks from firefox/chrome:
 ---------------------------------------
+
 ```bash
 python import_bookmarks.py /path/to/my/file MyUserName
 ```

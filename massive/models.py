@@ -22,43 +22,41 @@ class Users(db.Entity):
         return '<User %r>' % (self.login)
 
 
-# class Favicon(db.Entity):
-#     image = ImageField(
-#         size=(
-#             16,
-#             16,
-#             True),
-#         thumbnail_size=None,
-#         collection_name='favicon',
-#         required=True)
+class Favicon(db.Entity):
+    image = Optional(bytes)
+    links = Set("Links")
+
 
 class Tags(db.Entity):
-    name = Required(str)
+    name = Optional(str)
     links = Set("Links")
+
 
 class Links(db.Entity):
     description = Optional(str)
     url = Optional(str)
     title = Optional(str)
-    #favicon = ReferenceField(Favicon)
+    favicon = Set(Favicon)
     user = Required(Users)
     tags = Set(Tags)
 
     def dump(self):
         tags = [t.name for t in self.tags]
 
+        favicon = False
+        if self.favicon:
+            favicon = True
+
         return {
             "_id": self.id,
             "url": self.url,
             "title": self.title,
             "description": self.description,
-            "tags": tags
+            "tags": tags,
+            "favicon": favicon
         }
 
     def __repr__(self):
         return '<Link %r>' % (self.url)
-
-# class Favicon(db.Entity):
-#     link = 
 
 db.generate_mapping(create_tables=True)

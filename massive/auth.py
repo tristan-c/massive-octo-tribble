@@ -17,6 +17,7 @@ def load_user(userid):
 @login_manager.unauthorized_handler
 def unauthorized():
     return "unauthorized", 405
+    
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

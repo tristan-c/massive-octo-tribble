@@ -8,18 +8,11 @@ from bs4 import BeautifulSoup
 
 
 def get_page_favicon(url, iconUri=None):
-    page = None
-    if iconUri:
-        try:
-            page = urllib.request.urlopen(iconUri, timeout=5)
-        except:
-            page = None
-
-    if not page:
-        try:
-            page = urlopen("http://getfavicon.appspot.com/%s" % url, timeout=5)
-        except:
-            page = None
+    try:
+        page = urllib.request.urlopen("http://www.google.com/s2/favicons?domain=%s" % url, timeout=5)
+        # page = urllib.request.urlopen("%s/favicon.ico" % url, timeout=5)
+    except:
+        page = None
 
     if page:
         i = BytesIO(page.read())
@@ -29,9 +22,7 @@ def get_page_favicon(url, iconUri=None):
             try:
                 Image.open(i).save(image, "PNG")
                 image.seek(0)
-                fav = Favicon()
-                fav.image.put(image)
-                fav.save()
+                fav = Favicon(image=image.read())
                 return fav
             except Exception as e:
                 print("error with image")
@@ -54,8 +45,8 @@ def get_page_title(url):
         
     soup = BeautifulSoup(text)
 
-    for x in soup.findAll('title'):
-        if x.string:
-            return x.string
+    title = soup.findAll('title')
+    if title:
+        return title[0].string
 
     return None
