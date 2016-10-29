@@ -1,69 +1,118 @@
 <!DOCTYPE html>
 <html ng-app="massiveApp">
-    <head>
-        <title>Massive is massive</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/site.css">
-        <link rel="stylesheet" type="text/css" href="css/tags.css">
-    </head>
+<head>
+  <title>Massive is massive</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="css/spinkit.css">
+  <link rel="stylesheet" type="text/css" href="css/tags.css">
+  <link rel="stylesheet" type="text/css" href="css/site.css">
+</head>
 
-    <body ng-controller="LinksListCtrl">
-        <nav class="navbar navbar-default" role="navigation">
-            <form class="navbar-form navbar-left" role="search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" ng-model="search">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default "><span class="glyphicon glyphicon-refresh"></span></button>
-                    </span>
-                </div>
-            </form>
-            <div class="navbar-btn navbar-right">
-                <button class="btn btn-default" ng-click="open()">Add link</button>
-            </div>
-        </nav>
+<body>
+  <div id="app">
 
-<!--         <div>
-            <div ng-repeat="link in links | filter:search" class="linkBrick panel panel-default">
-                <div class="panel-heading linkBrick-header">
-                    <span class="glyphicon glyphicon-remove cross" ng-click="remove(link._id)"></span> 
-                    <img ng-if="link.favicon" ng-src="/ico/{{link._id}}"></img>
-                    <a href="{{link.url}}">
-                        <h5>
-                            {{link.title || link.url}}
-                        </h5>
-                    </a>
-                </div>
-                <div class="panel-body">
-                    <div ng-tag ng-model="link"></div>
-                </div>
-            </div>
-        </div> -->
+    <transition name="modal">
+      <div class="modal-mask" v-show="showSpinner">
+        <div class="modal-wrapper">
+          <div class="sk-circle">
+            <div class="sk-circle1 sk-child"></div>
+            <div class="sk-circle2 sk-child"></div>
+            <div class="sk-circle3 sk-child"></div>
+            <div class="sk-circle4 sk-child"></div>
+            <div class="sk-circle5 sk-child"></div>
+            <div class="sk-circle6 sk-child"></div>
+            <div class="sk-circle7 sk-child"></div>
+            <div class="sk-circle8 sk-child"></div>
+            <div class="sk-circle9 sk-child"></div>
+            <div class="sk-circle10 sk-child"></div>
+            <div class="sk-circle11 sk-child"></div>
+            <div class="sk-circle12 sk-child"></div>
+          </div>
+        </div>
+      </div>
+    </transition>
 
-       <table class="table table-condensed">
-            <tbody>
-                <tr ng-repeat="link in links | filter:search">
-                    <td>
-                        <span class="glyphicon glyphicon-remove cross" ng-click="remove(link._id)"></span>
-                    </td>
-                    <td>
-                        <img ng-if="link.favicon" ng-src="/ico/{{link._id}}"></img>
-                    </td>
-                    <td>
-                        <a href="{{link.url}}" target="_blank">{{link.title || link.url}}</a>
-                    </td>
-                    <td>
-                        <div ng-tag ng-model="link"></div>
-                    </td>
-                </tr>
-            </tbody>
+    <!-- use the modal component, pass in the prop -->
+    <modal v-if="showModal" @close="showModal = false"></modal>
 
-        </table>
-    </body>
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/angular.js"></script>
-    <!--<script src="js/angular-route.js"></script>-->
-    <script type="text/javascript" src="js/angular-resource.js"></script>
-    <script type="text/javascript" src="js/ui-bootstrap.min.js"></script>
-    <script src="js/app.js"></script>
+    <nav class="navbar navbar-default" role="navigation">
+      <form class="navbar-form navbar-left" role="search">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search" v-model="search">
+          <span class="input-group-btn">
+            <button class="btn btn-default "><span class="glyphicon glyphicon-refresh"></span></button>
+          </span>
+        </div>
+      </form>
+      <div class="navbar-btn navbar-right">
+        <button class="btn btn-default" @click="showModal = true">Add link</button>
+      </div>
+    </nav>
+
+
+    <table class="table table-condensed">
+      <tbody>
+        <tr v-for="link in filteredLinks">
+          <td>
+            <span class="glyphicon glyphicon-remove cross" @click="remove(link._id)"></span>
+          </td>
+          <td>
+            <img ng-if="link.favicon" v-bind:src="'/ico/' + link.favicon"></img>
+          </td>
+          <td>
+            <a :href="link.url" target="_blank">{{link.title}}</a>
+          </td>
+          <td>
+            <ul class="tags">
+              <li v-for="tag in link.tags" class="tag">{{tag}}</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+</body>
+
+<script type="text/x-template" id="modal-template">
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <slot name="header">
+              Add new link
+            </slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body">
+              <input v-model="url" type="text" class="form-control" placeholder="Url" required>
+              <br />
+              <input v-model="tags" type="text" class="form-control" placeholder="Tags separated with comas">
+            </slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+              <button class="btn btn-default" @click="$emit('close')">
+                Close
+              </button>
+              <button class="btn btn-primary" @click="save()">
+                Save
+              </button>
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+</script>
+
+
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+
 </html>

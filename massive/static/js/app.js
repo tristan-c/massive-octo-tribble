@@ -1,121 +1,87 @@
-var massiveApp = angular.module('massiveApp', [
-    'ngResource',
-    'ui.bootstrap'
-    //'ngRoute'
-]);
+window.eventBus = new Vue();
 
-massiveApp.factory('NotLogged', ['$window', function($window) {
+Vue.component('modal', {
+  template: '#modal-template',
+  data : function(){
     return {
-        'responseError': function(error) {
-            if(error.status == 405) {
-                $window.location.href = '/login';
-            }
-        }
+        url: "",
+        tags: ""
+      }
+  },
+  methods: {
+    save:function(){
+        var me = this,
+	    http = new XMLHttpRequest(),
+            params = "";
+
+        http.open("POST", "/links", true);
+        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        
+        params += "url=";
+        params += encodeURIComponent(this.url);
+        params += "&tags=";
+        params += encodeURIComponent(this.tags);
+
+        http.send(params);
+        me.$emit("close");
+	window.eventBus.$emit('reload');
     }
-}]);
+  }
+})
 
-massiveApp.factory('Links', ['$resource','NotLogged',
-    function ($resource, NotLogged) {
-    var links = $resource(
-        '/links', {}, {
-                        'save':{method:'POST'},
-                        'query':{cache:false,isArray:true,interceptor:NotLogged}
-                    }
-    );
-    return links;
-}]);
-
-massiveApp.controller('LinksListCtrl',['$scope','$modal','$http','Links',
-    function($scope,$modal,$http,Links) {
-        $scope.links = Links.query();
-
-        $scope.remove = function(_id){
-            console.log(_id)
-            if(_id != undefined){
-                $http.delete('/links/' + _id).success(function(r){
-                    $scope.links = Links.query();
-                })
+var app = new Vue({
+    el: '#app',
+    data: {
+        links: [],
+        filteredLinks: [],
+        search: "",
+        showModal: false,
+        showSpinner: false
+    },
+    created: function() {
+        this.fetchData();
+	window.eventBus.$on('reload',this.fetchData);
+    },
+    methods: {
+        fetchData: function() {
+            var xhr = new XMLHttpRequest()
+            var me = this
+            xhr.open('GET', "/links")
+            xhr.onload = function() {
+                var data = JSON.parse(xhr.responseText);
+                me.links = data;
+                me.filteredLinks = data;
+                me.showSpinner = false;
             }
-        };
-
-        //---------------- modal -----------
-        $scope.open = function () {
-            var modalInstance = $modal.open({
-                templateUrl: 'partials/modal.html',
-                controller: 'ModalInstanceCtrl'
-            });
-
-            modalInstance.result.then(function () {
-                $scope.links = Links.query();
+            me.showSpinner = true;
+            xhr.send();
+        },
+        remove: function(linkId){
+            var xhr = new XMLHttpRequest(),
+	        me  = this;
+            xhr.open('DELETE', "/links/" + linkId)
+            xhr.send()
+	    me.fetchData()
+        }
+    },
+    watch: {
+        search: function() {
+            var me = this
+            me.filteredLinks = me.links.filter(function(item) {
+                var searchRegex = new RegExp(me.search, 'i')
+                for(var i = 0 ; i < item.tags.length ; i++)
+                    if(searchRegex.test(item.tags[i]))
+                        return true
+                if(searchRegex.test(item.url))
+                    return true;
+                if(searchRegex.test(item.title))
+                    return true
+                return false
             })
         }
     }
-]);
-
-massiveApp.directive('ngTag', function() {
-    return {
-        restrict: 'A',
-        require: ['^ngModel'],
-        scope: {
-            ngModel: '='
-        },
-        controller: ['$scope', '$http', function($scope, $http) {
-            $scope.newTags = undefined;
-            $scope.isCollapsed = true;
-
-            $scope.toggleAddTags = function(){
-                if ($scope.isCollapsed == true)
-                    $scope.isCollapsed = false
-                else
-                    $scope.isCollapsed = true
-            }
-
-            $scope.addTags = function(_id){
-                if(_id != undefined){
-                    var data = {
-                        tags : $scope.newTags.split(",")
-                    };
-                    $http.post('/links/' + _id, data).success(function(r){
-                        $scope.ngModel.tags = r.tags
-                        $scope.newTags = undefined;
-                        $scope.toggleAddTags()
-                    });
-                }
-            }
-        }],
-        templateUrl: 'template/ngtag.html'
-    };
-});
-
-var ModalInstanceCtrl = function ($scope, $modalInstance, $http) {
-    $scope.url = undefined;
-    $scope.tags = undefined;
-
-    $scope.ok = function () {
-
-        if (!angular.isUndefined($scope.url)){
-                tmp = [];
-
-            if(!angular.isUndefined($scope.tags)){
-                tags = $scope.tags.split(',');
-
-                for(i = 0; i < tags.length; i++)
-                    tmp.push(tags[i].trim());
-            }
-
-            var data = {
-                tags: tmp,
-                url: $scope.url
-            };
-        }
-
-        $http.post('/links', data);//.success(function(){});
-        $modalInstance.close();
-    };
-
-    $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
-    };
+})
 
 
-};
+
+//jquery part

@@ -1,51 +1,51 @@
+from flask_security import UserMixin, RoleMixin
+
 from massive import db
-from pony.orm import *
 
-class Users(db.Entity):
-    password = Required(str)
-    login = Required(str,unique=True)
-    links = Set("Links", cascade_delete=True)
+# Define models
+roles_users = db.Table('roles_users',
+        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
 
-    def get_id(self):
-        return str(self.id)
+relationship_table=db.Table('relationship_table',                            
+                             db.Column('link_id', db.Integer,db.ForeignKey('link.id'), nullable=False),
+                             db.Column('tags_id',db.Integer,db.ForeignKey('tags.id'),nullable=False),
+                             db.PrimaryKeyConstraint('link_id', 'tags_id') )
+ 
 
-    def is_anonymous(self):
-        return False
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
 
-    def is_active(self):
-        return True
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), index=True, unique=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
+    
+    links = db.relationship('Link', backref='user', lazy='dynamic')
 
-    def is_authenticated(self):
-        return True
+
 
     def __repr__(self):
-        return '<User %r>' % (self.login)
+        return '<User %r>' % (self.email)
 
 
-class Favicon(db.Entity):
-    image = Optional(bytes)
-    links = Set("Links")
-
-
-class Tags(db.Entity):
-    name = Optional(str)
-    links = Set("Links")
-
-
-class Links(db.Entity):
-    description = Optional(str)
-    url = Optional(str)
-    title = Optional(str)
-    favicon = Set(Favicon)
-    user = Required(Users)
-    tags = Set(Tags)
+class Link(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    description = db.Column(db.String(255))
+    url = db.Column(db.String(140))
+    title = db.Column(db.String(140))
+    favicon = db.Column(db.String(140))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    tags=db.relationship('Tags', secondary=relationship_table, backref='links' )
 
     def dump(self):
         tags = [t.name for t in self.tags]
-
-        favicon = False
-        if self.favicon:
-            favicon = True
 
         return {
             "_id": self.id,
@@ -53,10 +53,14 @@ class Links(db.Entity):
             "title": self.title,
             "description": self.description,
             "tags": tags,
-            "favicon": favicon
+            "favicon": self.favicon
         }
 
     def __repr__(self):
         return '<Link %r>' % (self.url)
 
-db.generate_mapping(create_tables=True)
+class Tags(db.Model):
+    id=db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(140))
+
+
