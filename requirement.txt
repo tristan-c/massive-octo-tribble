@@ -12,7 +12,6 @@ Jinja2==2.7.3
 Mako==1.0.0
 MarkupSafe==0.23
 Pillow==3.2.0
-pony==0.6.1
 python-bcrypt==0.3.1
 pytz==2015.4
 six==1.9.0
