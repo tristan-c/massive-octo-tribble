@@ -1,7 +1,10 @@
 massive-octo-tribble
 ====================
 
-import,store and search bookmarks
+import,store and search bookmarks. Based on Flask. Yes the css is not pretty, ongoing work.
+
+![ScreenShot](screenshot.png)
+
 
 * Default to SQLite through PonyOrm
 * Flask
@@ -27,12 +30,23 @@ pip install -r requirement.txt
 python run.py
 ```
 
-Then don't forget to add a user:
+Add a user:
 ```bash
 python addUser.py
 ```
 
+Or use the in app register.
+
+add a salt in config file
+
+```python
+SECRET_KEY = "key well generated"
+SECURITY_PASSWORD_SALT = "key well generated"
+```
+
 Everything is setup, You can open your browser at http://localhost:7777/.
+
+
 
 Importing bookmarks from firefox/chrome:
 ---------------------------------------
